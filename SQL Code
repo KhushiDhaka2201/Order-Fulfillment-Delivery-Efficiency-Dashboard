@@ -1,0 +1,19 @@
+-- SQL to extract order fulfillment and delivery data
+SELECT 
+    o.OrderID, 
+    o.OrderDate, 
+    s.SellerName, 
+    p.Category, 
+    sh.ShipmentDate, 
+    sh.DeliveryDate, 
+    sh.ExpectedDeliveryDate, 
+    sh.Region, 
+    DATEDIFF(day, sh.ShipmentDate, sh.DeliveryDate) AS DeliveryDuration,
+    CASE 
+        WHEN sh.DeliveryDate > sh.ExpectedDeliveryDate THEN 1 ELSE 0 
+        END AS DelayedFlag
+FROM Orders o
+JOIN Sellers s ON o.SellerID = s.SellerID
+JOIN Products p ON o.ProductID = p.ProductID
+JOIN Shipments sh ON o.OrderID = sh.OrderID
+WHERE o.OrderDate >= '2023-01-01';
